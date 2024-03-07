@@ -1,6 +1,6 @@
 # Raspberrypi Configuration Script
 
-Ansible configuration for raspberry pi using Ansible
+Ansible configuration for my raspberry pi using Ansible
 
 ## Requirements
 
