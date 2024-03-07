@@ -1,0 +1,56 @@
+---
+- name: Configuring Raspberrypi
+  hosts: raspberry
+  become: true
+  tasks:
+    - name: Update apt
+      ansible.builtin.apt:
+        autoremove: true
+        state: present
+        upgrade: safe
+
+    - name: Install OpenJDK
+      ansible.builtin.package:
+        name: openjdk-21-jdk-headless
+        state: present
+
+    - name: Install JMusic Bot
+      ansible.builtin.get_url:
+        dest: /home/ubuntu/jmusic/JMusicBot.jar
+        url: https://github.com/jagrosh/MusicBot/releases/latest/download/JMusicBot-0.3.9.jar
+        mode: '0644'
+
+    - name: Create JMusic Bot config file
+      ansible.builtin.copy:
+        src: "{{ playbook_dir }}/jmusic/jmusicconfig.txt"
+        dest: "/home/ubuntu/jmusic/config.txt"
+        mode: '0644'
+
+    - name: Create a systemd init for JMusic Bot
+      ansible.builtin.copy:
+        src: "{{ playbook_dir }}/jmusic/JMusicBot.service"
+        dest: "/etc/systemd/system/JMusicBot.service"
+        mode: '0644'
+
+    - name: Enabling JMusic Bot Service
+      ansible.builtin.service:
+        name: JMusicBot
+        enabled: true
+        state: started
+
+    - name: Installing I2pd
+      ansible.builtin.apt:
+        name: i2pd
+        state: present
+
+    - name: Configuring I2pd
+      ansible.builtin.copy:
+        src: "{{ playbook_dir }}/i2pd/i2pd.conf"
+        dest: "/etc/i2pd/i2pd.conf"
+        mode: '0644'
+
+    - name: Enabling I2pd Service
+      ansible.builtin.service:
+        name: i2pd
+        enabled: true
+        state: started
